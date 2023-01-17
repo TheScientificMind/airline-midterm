@@ -20,11 +20,10 @@ class booking_entry:
          Price = None
          Time =  None
          Confirmation_Code = None
-         def __init__(self, Airport_Code, Date, Price, Time, Confirmation_Code):
+         def __init__(self, Airport_Code, Datetime, Price, Confirmation_Code):
             self.Airport_Code = Airport_Code
-            self.Date = Date
+            self.Date = Datetime
             self.Price = Price
-            self.Time = Time
             self.Confirmation_Code = Confirmation_Code
 def Buy_Ticket (X):
    booking_entry1 = booking_entry(input("First name:"),input("Last name:", input("Phone number:",input("Email:"))))
@@ -33,7 +32,12 @@ def Buy_Ticket (X):
    if y == "yes":
       Airport1 = input("please enter origin airport:")
       Airport2 = input("please enter destination airport:")
-      squery == """SELECT * FROM flights WHERE origin='{Origin}' and destination='{Destination}'""".format(Airport1=Origin, Airport2=Destination)
+      squery = """SELECT * FROM flights WHERE origin='{Origin}' and destination='{Destination}'""".format(Origin=Airport1, Destination=Airport2)
+      flight_list = sqlib.read_query(con,squery)
+      print(flight_list)
+      ID = input(int("Enter Id of Flight you wish to purchase tickets for:")
+      uquery = """SELECT * FROM flights WHERE origin='{Origin}' and destination='{Destination}'""".format(Origin=Airport1, Destination=Airport2)
+      
    elif y =="no":
        booking_entry1 = booking_entry(input("Enter First name:"),input("EnterLast name:", input("Enter Phone number:",input("Enter Email:"))))
 Buy_Ticket(input(int("How many tickets do you want to buy:")))
