@@ -6,7 +6,7 @@ uinput = list(map(int,input("Input Flight ID: ").strip().split()))
 # Need to get the ID (for real)
 
 tickets = 0
-# Need to get real ticket information
+# Need to get real ticket information + add the tickets being bought to this because if person is buying 3 tickets but there is only one more seat avalible that bad
 
 qt = """select flights.id,capacity.aircraft from flights 
 join capacity on flights.aircraft = capacity.aircraft;""".format(id=uinput[0])
@@ -38,7 +38,11 @@ if tickets > seats:
         print("do booking stuff")
     else:
         print("goodbye")
+else:
+    print("Your ticket has been booked.")
 
+
+# table where flier info will be avalible is in the works
 class flier:
     fname = None
     lname = None
