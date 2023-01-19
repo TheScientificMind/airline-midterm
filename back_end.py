@@ -14,7 +14,20 @@ for x in query_results:
 
 uinput = uinput[0] - 1
 
-print(from_db[uinput][1])
+aircraft = (from_db[uinput][1])
+
+if aircraft == "737":
+    seats = 25
+elif aircraft == "747":
+    seats = 100
+elif aircraft == "767":
+    seats = 50
+elif aircraft == "777":
+    seats = 75
+elif aircraft == "A320":
+    seats = 25
+else:
+    print("error")
 
 class flier:
     fname = None
