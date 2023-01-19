@@ -36,23 +36,44 @@ def Buy_Ticket (X):
       Airport1 = input("please enter origin airport:")
       Airport2 = input("please enter destination airport:")
       squery = """SELECT * FROM flights WHERE origin='{Origin}' AND destination='{Destination}'""".format(Origin=Airport1, Destination=Airport2)
-      q = sqlib.execute_query(con,squery)
+      q = sqlib.read_query(con,squery)
+      print(q)
       ID = input("Enter Id of Flight you wish to purchase tickets for:")
-      uquery = """SELECT * FROM flights WHERE origin='{Origin}' AND destination='{Destination}' ID ='{ID}' AND""".format(Origin=Airport1, Destination=Airport2, ID=ID)
+      uquery = """SELECT * FROM flights WHERE origin='{Origin}' AND destination='{Destination}' AND ID ='{ID}'""".format(Origin=Airport1, Destination=Airport2, ID=ID)
       flight = sqlib.read_query(con,uquery)
       for x in flight:
          x = list(x)
          theflight.append(x)
-      for u in range(X):
-         R = random.randint(10000000, 99999999)
-         Create_Ticket(theflight [0][2], theflight [0][3], theflight [0][4], theflight [0][5], theflight [0][6], R)
+      def Create_Ticket (x, y, c, a, f, g):
+         ticket = Ticket(x, y, c, "$"+ a ,f, g )
+         print(ticket.Departure_Airport,ticket.Arrival_Airport, ticket.Datetime, ticket.Price, ticket.Aircraft, ticket.Confirmation_Code)
+      for u in range(int(X)):
+         R = str(random.randint(10000000, 99999999))
+         Create_Ticket(str(theflight [0][1]), str(theflight [0][2]), str(theflight [0][3]), str(theflight [0][4]), str(theflight [0][5]), R)
    elif y =="no":
-       bookingholder = booking_entry(input("Enter First name:"),input("Enter Last name:", input("Enter Phone number:",input("Enter Email:"))))
+       bookingentry = booking_entry(input("Enter First name:"),input("Enter Last name:"), input("Enter Phone number:"),input("Enter Email:"))
+       print (bookingentry.fname, bookingentry.lname, bookingentry.Phone_Number, bookingentry.Email)
        y == "yes"
+       theflight = []
+       Airport1 = input("please enter origin airport:")
+       Airport2 = input("please enter destination airport:")
+       squery = """SELECT * FROM flights WHERE origin='{Origin}' AND destination='{Destination}'""".format(Origin=Airport1, Destination=Airport2)
+       q = sqlib.read_query(con,squery)
+       print(q)
+       ID = input("Enter Id of Flight you wish to purchase tickets for:")
+       uquery = """SELECT * FROM flights WHERE origin='{Origin}' AND destination='{Destination}' AND ID ='{ID}'""".format(Origin=Airport1, Destination=Airport2, ID=ID)
+       flight = sqlib.read_query(con,uquery)
+       for x in flight:
+         x = list(x)
+         theflight.append(x)
+       def Create_Ticket (x, y, c, a, f, g):
+         ticket = Ticket(x, y, c, "$"+ a ,f, g )
+         print(ticket.Departure_Airport,ticket.Arrival_Airport, ticket.Datetime, ticket.Price, ticket.Aircraft, ticket.Confirmation_Code)
+       for u in range(int(X)):
+         R = str(random.randint(10000000, 99999999))
+         Create_Ticket(str(theflight [0][1]), str(theflight [0][2]), str(theflight [0][3]), str(theflight [0][4]), str(theflight [0][5]), R)
 Buy_Ticket(input("How many tickets do you want to buy:"))
-def Create_Ticket (x, y, c, a, f, g):
-   ticket = Ticket(x, y, c, "$"+ a ,f, g )
-   print(ticket.Departure_Airport,ticket.Arrival_Airport, ticket.Datetime, ticket.Price, ticket.Aircraft, ticket.Confirmation_Code)
+
    
    
       
