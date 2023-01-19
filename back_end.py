@@ -60,3 +60,43 @@ class flier:
     
     def addff(self,ffmiles):
         self.ffmiles =+ ffmiles
+
+
+## 22000 Total
+# 679 DEL origins
+# 691 DEL destinations
+# 646 SFO origins
+# 557 SFO destinations
+# 644 MEX origins
+# 628 MEX destinations
+# 647 LAX origins
+# 644 LAX destinations
+# 617 CTU origins
+# 671 CTU destinations
+# 647 EWR origins
+# 637 EWR destinations
+# 1300 SEA origins
+# 1327 SEA destinations
+# 656 IAH origins
+# 628 IAH destinations
+# 646 CAN origins
+# 638 CAN destinations
+# 698 FRA origins
+# 631 FRA destinations
+# 670 IST origins
+# 640 IST destinations
+# 618 CJU origins
+# 609 CJU destinations
+# 647 CKG origins
+# 603 CKG destinations
+# 693 DEN origins
+# 663 DEN destinations
+# BOS
+# ORD
+# ATL
+# HND
+# KMG
+# SVO
+# JFK
+# DXB
+# SZX
