@@ -3,6 +3,10 @@ from_db = []
 con = sqlib.create_db_connection("127.0.0.1","alischer","alischer1","airline")
 
 uinput = list(map(int,input("Input Flight ID: ").strip().split()))
+# Need to get the ID (for real)
+
+tickets = 0
+# Need to get real ticket information
 
 qt = """select flights.id,capacity.aircraft from flights 
 join capacity on flights.aircraft = capacity.aircraft;""".format(id=uinput[0])
@@ -29,6 +33,12 @@ elif aircraft == "A320":
 else:
     print("error")
 
+if tickets > seats:
+    if input("I'm sorry but your requested flight is full. Press 1 if you would like to book another flight. Press 2 if you would like to end.") == "1":
+        print("do booking stuff")
+    else:
+        print("goodbye")
+
 class flier:
     fname = None
     lname = None
@@ -41,7 +51,7 @@ class flier:
         self.lname = lname
         self.phone_num = phone_num
         self.email = email
-        # all based upon email
+    # all based upon email
         # self.ffmiles = 
     
     def addff(self,ffmiles):
