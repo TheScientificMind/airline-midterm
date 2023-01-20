@@ -44,4 +44,4 @@ Buy_Ticket(input(int("How many tickets do you want to buy:")))
 
 
 
-
+    
