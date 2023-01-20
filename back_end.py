@@ -2,20 +2,6 @@ import sqlib
 from_db = []
 con = sqlib.create_db_connection("127.0.0.1","alischer","alischer1","airline")
 
-# uinput = list(map(int,input("Input Flight ID: ").strip().split()))
-# # Need to get the ID (for real)
-
-# tickets = 0
-# # Need to get real ticket information + add the tickets being bought to this because if person is buying 3 tickets but there is only one more seat avalible that bad
-
-# qt = """select flights.id,capacity.aircraft from flights 
-# join capacity on flights.aircraft = capacity.aircraft;""".format(id=uinput[0])
-
-# query_results = sqlib.read_query(con,qt)
-# for x in query_results:
-#         x = list(x)
-#         from_db.append(x)
-
 uinput = int(input("Input Booking ID: "))
 
 qt = """select * from bookings where booking_id='{uinput}';""".format(uinput = uinput)
@@ -24,29 +10,40 @@ for x in query_results:
         x = list(x)
         from_db.append(x)
 flight_id = from_db[0][5]
+aircraft = from_db[0][-1]
 
-ticket_checker = """select * from bookings where flight_id ='{flight_id}';""".format(flight_id = flight_id)
+tt = """select * from bookings where flight_id ='{flight_id}';""".format(flight_id = flight_id)
+ticket_checker = sqlib.read_query(con,tt)
+tickets = 0
+ticket_hold = []
+for x in ticket_checker:
+        x = list(x)
+        ticket_hold.append(x)
+for y in ticket_hold:
+        ticket =+ int(ticket_hold[y][8])
+# NEED HELP WITH ABOVE LINE OF CODE, ASK DYLAN AT LUNCH/BREAK?
+print(ticket)
 
-# if aircraft == "737":
-#     seats = 25
-# elif aircraft == "747":
-#     seats = 100
-# elif aircraft == "767":
-#     seats = 50
-# elif aircraft == "777":
-#     seats = 75
-# elif aircraft == "A320":
-#     seats = 25
-# else:
-#     print("error")
+if aircraft == "737":
+    seats = 25
+elif aircraft == "747":
+    seats = 100
+elif aircraft == "767":
+    seats = 50
+elif aircraft == "777":
+    seats = 75
+elif aircraft == "A320":
+    seats = 25
+else:
+    print("error")
 
-# if tickets > seats:
-#     if input("I'm sorry but your requested flight is full. Press 1 if you would like to book another flight. Press 2 if you would like to end.") == "1":
-#         print("do booking stuff")
-#     else:
-#         print("goodbye")
-# else:
-#     print("Your ticket has been booked.")
+if tickets > seats:
+    if input("I'm sorry but your requested flight is full. Press 1 if you would like to book another flight. Press 2 if you would like to end.") == "1":
+        print("do booking stuff")
+    else:
+        print("goodbye")
+else:
+    print("Your ticket has been booked.")
 
 # email = "placeholder@test.edu"
 # try:
