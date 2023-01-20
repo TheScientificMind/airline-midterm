@@ -45,17 +45,17 @@ if tickets > seats:
 else:
     print("Your ticket has been booked.")
 
-# email = "placeholder@test.edu"
-# try:
-#     query = """select * from ffaccounts where email ='{email}';""".format(email = email)
-#     # calculate the number of FF the user would get
-#     # give user said FF
-# except:
-#     if int(input("Would you like to create a frequent flier account? 1 for yes, 0 for no: ")) > 0:
-#         password = str(input("Please enter a password for your frequent flier account: "))
-#         creater = """inset into ffaccounts (email,password,ffmiles) values ('{email}','{password}','0');""".format(email = email, password = password)
-#         # calculate the number of FF the user would get
-#         # give user said FF
+email = "placeholder@test.edu"
+try:
+    query = """select * from ffaccounts where email ='{email}';""".format(email = email)
+    # calculate the number of FF the user would get
+    # give user said FF
+except:
+    if int(input("Would you like to create a frequent flier account? 1 for yes, 0 for no: ")) > 0:
+        password = str(input("Please enter a password for your frequent flier account: "))
+        creater = """inset into ffaccounts (email,password,ffmiles) values ('{email}','{password}','0');""".format(email = email, password = password)
+        # calculate the number of FF the user would get
+        # give user said FF
 
 ## 22000 Total
 # 679 DEL origins
