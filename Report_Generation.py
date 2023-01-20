@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 import base64
 import secrets
 import string
+import pprint
 
 con = sqlib.create_db_connection("127.0.0.1", "dheadley", "dheadley1", "airline")
 fake = Faker()
@@ -16,37 +17,63 @@ class Report_gen:
         height = []
         x = []
         y = []
+        pop_data = None
 
         def __init__(self):
                 sq = """
                 SELECT origin, count(origin) as 'value_occurrence' FROM flights
                 GROUP BY origin 
-                ORDER BY 'value_occurrence' 
+                ORDER BY count(origin) 
                 DESC LIMIT 5;
                 """
 
-                run_sq = sqlib.read_query(con, sq)
+                self.pop_data = sqlib.read_query(con, sq)
 
-                for i in run_sq:
+                for i in self.pop_data:
                         self.bars.append(i[0])
                         self.height.append(i[1])
 
+        # tells the user helpful info when the print the object
         def __str__(self):
                 return """
                 This class' primary purpose is to generate reports as charts and text. 
                 You can run pop_destinations to see a chart of the most popular destinations.
                 """
 
+        # makes a graph or prints the information of the most popular destinations
         def pop_destinations(self):
-                plt.bar(self.bars, 
-                self.height,
-                color = "orange")
+                try:        
+                        print_console = input("Would you like the info printed to the console? ").lower()
+                        if print_console == "yes":
+                                print(f'\n{self.pop_data}\n')
+                        elif print_console == "no":
+                                print ("The info won't be printed to the console.")
+                        else:
+                                print("Your input was not understood. The info won't be printed to the console.")
+                        
+                        save_graph = input("Would you like the info saved as a graph? ").lower()
+                        if  save_graph == "yes":
+                                plt.bar(self.bars, 
+                                self.height,
+                                color = "orange")
 
-                plt.xlabel('Destination')
-                plt.ylabel('# of Bookings')
-                plt.suptitle('Most Popular Destinations')
-                plt.savefig(f'{input("Enter file name: ")}.png')
-                plt.show()
+                                plt.xlabel('Destination')
+                                plt.ylabel('# of Bookings')
+                                plt.suptitle('Most Popular Destinations')
+                                file_name = f'{input("Enter file name: ")}.png'
+                                if '.' not in file_name:
+                                        plt.savefig()
+                                        plt.show()
+                                        print(f"The graph has been saved as {file_name}")
+                                else:
+                                        print("There was a period in your file name. Please run the program once more to try again.")
+                        elif save_graph == "no":
+                                print("The graph will not be saved.")
+                        else:
+                                print("Your input was not understood. The graph won't be saved.")
+
+                except Exception as err:
+                        print(f"You entered an invalid input. It produced the error:\n\n{err}\n\nYou may run the program to try again.")
 
 class Gen_data:
         first_name = None
