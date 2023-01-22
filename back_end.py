@@ -2,23 +2,27 @@ import sqlib
 from_db = []
 con = sqlib.create_db_connection("127.0.0.1","alischer","alischer1","airline")
 
-uinput = list(map(int,input("Input Flight ID: ").strip().split()))
-# Need to get the ID (for real)
+uinput = int(input("Input Booking ID: "))
 
-tickets = 0
-# Need to get real ticket information + add the tickets being bought to this because if person is buying 3 tickets but there is only one more seat avalible that bad
-
-qt = """select flights.id,capacity.aircraft from flights 
-join capacity on flights.aircraft = capacity.aircraft;""".format(id=uinput[0])
-
+qt = """select * from bookings where booking_id='{uinput}';""".format(uinput = uinput)
 query_results = sqlib.read_query(con,qt)
 for x in query_results:
         x = list(x)
         from_db.append(x)
+flight_id = from_db[0][5]
+aircraft = from_db[0][-1]
 
-uinput = uinput[0] - 1
-
-aircraft = (from_db[uinput][1])
+tt = """select * from bookings where flight_id ='{flight_id}';""".format(flight_id = flight_id)
+ticket_checker = sqlib.read_query(con,tt)
+tickets = 0
+ticket_hold = []
+for x in ticket_checker:
+        x = list(x)
+        ticket_hold.append(x)
+for y in ticket_hold:
+        ticket =+ int(ticket_hold[y][8])
+# NEED HELP WITH ABOVE LINE OF CODE, ASK DYLAN AT LUNCH/BREAK?
+print(ticket)
 
 if aircraft == "737":
     seats = 25
@@ -41,26 +45,17 @@ if tickets > seats:
 else:
     print("Your ticket has been booked.")
 
-
-# table where flier info will be avalible is in the works
-class flier:
-    fname = None
-    lname = None
-    phone_num = None
-    email = None
-    ffmiles = None
-
-    def __init__(self,fname,lname,phone_num,email):
-        self.fname = fname
-        self.lname = lname
-        self.phone_num = phone_num
-        self.email = email
-    # all based upon email
-        # self.ffmiles = 
-    
-    def addff(self,ffmiles):
-        self.ffmiles =+ ffmiles
-
+email = "placeholder@test.edu"
+try:
+    query = """select * from ffaccounts where email ='{email}';""".format(email = email)
+    # calculate the number of FF the user would get
+    # give user said FF
+except:
+    if int(input("Would you like to create a frequent flier account? 1 for yes, 0 for no: ")) > 0:
+        password = str(input("Please enter a password for your frequent flier account: "))
+        creater = """inset into ffaccounts (email,password,ffmiles) values ('{email}','{password}','0');""".format(email = email, password = password)
+        # calculate the number of FF the user would get
+        # give user said FF
 
 ## 22000 Total
 # 679 DEL origins
@@ -91,12 +86,21 @@ class flier:
 # 603 CKG destinations
 # 693 DEN origins
 # 663 DEN destinations
-# BOS
-# ORD
-# ATL
-# HND
-# KMG
-# SVO
-# JFK
-# DXB
-# SZX
+# BOS origins
+# BOS destinations
+# ORD origins
+# ORD destinations
+# ATL origins
+# ATL destinations
+# HND origins
+# HND destinations
+# KMG origins
+# KMG destinations
+# SVO origins
+# SVO destinations
+# JFK origins
+# JFK destinations
+# DXB origins
+# DXB destinations
+# SZX origins
+# SZX destinations
