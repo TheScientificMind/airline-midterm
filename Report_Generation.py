@@ -3,11 +3,10 @@ import sqlib
 import random
 from faker import Faker
 import random
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import base64
 import secrets
 import string
-import pprint
 
 con = sqlib.create_db_connection("127.0.0.1", "dheadley", "dheadley1", "airline")
 fake = Faker()
@@ -21,10 +20,12 @@ class Report_gen:
 
         def __init__(self):
                 sq = """
-                SELECT origin, count(origin) as 'value_occurrence' FROM flights
-                GROUP BY origin 
-                ORDER BY count(origin) 
-                DESC LIMIT 5;
+                SELECT destination, count(destination)
+                FROM flights INNER JOIN bookings
+                ON flights.id = bookings.flight_id
+                GROUP BY destination 
+                ORDER BY count(destination) DESC 
+                LIMIT 5;
                 """
 
                 self.pop_data = sqlib.read_query(con, sq)
@@ -43,7 +44,7 @@ class Report_gen:
         # makes a graph or prints the information of the most popular destinations
         def pop_destinations(self):
                 try:        
-                        print_console = input("Would you like the info printed to the console? ").lower()
+                        print_console = input("Would you like the info printed to the console? ").lower().strip()
                         if print_console == "yes":
                                 print(f'\n{self.pop_data}\n')
                         elif print_console == "no":
@@ -51,7 +52,7 @@ class Report_gen:
                         else:
                                 print("Your input was not understood. The info won't be printed to the console.")
                         
-                        save_graph = input("Would you like the info saved as a graph? ").lower()
+                        save_graph = input("Would you like the info saved as a graph? ").lower().strip()
                         if  save_graph == "yes":
                                 plt.bar(self.bars, 
                                 self.height,
@@ -60,13 +61,13 @@ class Report_gen:
                                 plt.xlabel('Destination')
                                 plt.ylabel('# of Bookings')
                                 plt.suptitle('Most Popular Destinations')
-                                file_name = f'{input("Enter file name: ")}.png'
-                                if '.' not in file_name:
-                                        plt.savefig()
+                                file_name = input("Enter file name: ")
+                                if '.' in file_name:
+                                        print("There was a period in your file name. Please run the program once more to try again.")
+                                else:
+                                        plt.savefig(f'{file_name}.png')
                                         plt.show()
                                         print(f"The graph has been saved as {file_name}")
-                                else:
-                                        print("There was a period in your file name. Please run the program once more to try again.")
                         elif save_graph == "no":
                                 print("The graph will not be saved.")
                         else:
@@ -89,7 +90,7 @@ class Gen_data:
         aircraft_type = None
         password = None
         ffmiles = None
-        ntr = 1000
+        ntr = 2500
         
         # initializes fake values for tables
         def __init__(self):
@@ -99,7 +100,7 @@ class Gen_data:
                 self.phone = fake.phone_number()
                 self.flight_id = random.randint(1, 22000)
                 self.booking_price = str(round(random.uniform(100, 1000), 2))
-                self.purchase_date = fake.date_time_this_month() - timedelta(days = 30)
+                self.purchase_date = fake.date_time_between(date.fromisoformat('2022-01-01'), datetime.now() - timedelta(days = 14))
                 self.ticket_amount = random.randint(1, 8)
                 self.return_flights = random.randint(1, self.ticket_amount)
                 self.confirmation_code = str(random.randint(1000000, 9999999))
@@ -109,44 +110,40 @@ class Gen_data:
 
         # prints the bookings and ffaccounts when the object is printed
         def __str__(self):
-                squery = """
+                select_bookings = """
                 SELECT * FROM bookings;
+                """
+
+                select_ff = """
                 SELECT * FROM ffaccounts;
                 """
                 
-                # gets all the data from bookings
-                query_results = sqlib.read_query(con, squery)
+                # gets all the data from the tables
+                query_results = sqlib.read_query(con, select_bookings)
+                uery_results = sqlib.read_query(con, select_ff)
 
                 return str(query_results)
                 
         # inserts __ntr rows of data into the tables
         def insert_vals(self):
                 for i in range(self.ntr):
-                        insert_query = f"""
+                        insert_bookings = f"""
                         INSERT INTO bookings (fname, lname, email, phone, flight_id, booking_price, 
                         purchase_date, ticket_amount, return_flights, confirmation_code, aircraft_type)
                         VALUES ('{self.first_name}', '{self.last_name}', '{self.email}', '{self.phone}',
                         '{self.flight_id}', '{self.booking_price}', '{self.purchase_date}', '{self.ticket_amount}', 
                         '{self.return_flights}', '{self.confirmation_code}', '{self.aircraft_type}');
-                        
+                        """
+
+                        insert_ffaccounts = f"""
                         INSERT INTO ffaccounts (email, password, ffmiles) 
                         VALUES ("{self.email}", "{self.password}", "{self.ffmiles}");
                         """
 
-                        run_insert = sqlib.execute_query(con, insert_query)
-                        
+                        run_insert = sqlib.execute_query(con, insert_bookings)
+                        run_insert = sqlib.execute_query(con, insert_ffaccounts)
+
                         self.__init__()
-                        print(Report_gen())
-
-        # empties the tables
-        def empty_tables(self):
-                dquery = """
-                DELETE FROM bookings;
-                DELETE FROM ffaccounts;
-                """
-
-                dquery_results = sqlib.execute_query(con, dquery)
-
                 print(Report_gen())
 
 Report_gen().pop_destinations()
