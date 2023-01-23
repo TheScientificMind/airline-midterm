@@ -10,11 +10,11 @@ def substitute(string, dict):
 """
 
 # sends an email to a customer with the given information
-def sendEmail(code, origin, destination, date, time, aircraft, capacity, name, cost):
+def sendEmail(customer_email, code, origin, destination, date, time, aircraft, capacity, name, cost):
     # user and system emails
     message = Mail(
     from_email=From("barnstableairlines@gmail.com", "Barnstable Airlines"),
-    to_emails='dylanmatthewheadley@gmail.com',
+    to_emails=customer_email,
     )
 
     # replace values with data
