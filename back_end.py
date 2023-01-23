@@ -15,14 +15,15 @@ aircraft = from_db[0][-1]
 tt = """select * from bookings where flight_id ='{flight_id}';""".format(flight_id = flight_id)
 ticket_checker = sqlib.read_query(con,tt)
 tickets = 0
+
+tickets_new = tickets + from_db[0][8]
 ticket_hold = []
 for x in ticket_checker:
         x = list(x)
+        x = x[8]
         ticket_hold.append(x)
 for y in ticket_hold:
-        ticket =+ int(ticket_hold[y][8])
-# NEED HELP WITH ABOVE LINE OF CODE, ASK DYLAN AT LUNCH/BREAK?
-print(ticket)
+        ticket =+ y
 
 if aircraft == "737":
     seats = 25
@@ -48,14 +49,21 @@ else:
 email = "placeholder@test.edu"
 try:
     query = """select * from ffaccounts where email ='{email}';""".format(email = email)
+    ffq = """select * from bookings.booking_price,ffaccounts.email join ffaccounts on bookings.email = ffaccounts.email;"""
+    # NOT ENTIRERALLY SURE IF THIS WORKS ^ CHECK NOTE-BOOK
+    ff_checker = sqlib.read_query(con,ffq)
+    print(ff_checker)
     # calculate the number of FF the user would get
     # give user said FF
 except:
     if int(input("Would you like to create a frequent flier account? 1 for yes, 0 for no: ")) > 0:
         password = str(input("Please enter a password for your frequent flier account: "))
-        creater = """inset into ffaccounts (email,password,ffmiles) values ('{email}','{password}','0');""".format(email = email, password = password)
+        creater = """insert into ffaccounts (email,password,ffmiles) values ('{email}','{password}','0');""".format(email = email, password = password)
+        # INSERT DOESN'T WORK ^ NEED TO CHECK NOTE-BOOK
         # calculate the number of FF the user would get
         # give user said FF
+    else:
+        print("Understood")
 
 ## 22000 Total
 # 679 DEL origins
