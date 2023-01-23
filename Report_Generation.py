@@ -14,13 +14,17 @@ fake = Faker()
 class Report_gen:
         bars = []
         height = []
+        pop_data = []
         x = []
-        y = []
-        pop_data = None
+        y1 = []
+        y2 = []
+        book_rev_data = []
+        print_console = None
+        save_graph = None
 
         def __init__(self):
-                sq = """
-                SELECT destination, CAST(ROUND(COUNT(destination) * AVG(ticket_amount)) AS INT)
+                pop_query = """
+                SELECT destination, SUM(ticket_amount)
                 AS 'value_occurrence'
                 FROM flights INNER JOIN bookings
                 ON flights.id = bookings.flight_id
@@ -29,33 +33,84 @@ class Report_gen:
                 LIMIT 5;
                 """
 
-                self.pop_data = sqlib.read_query(con, sq)
+                self.pop_data = sqlib.read_query(con, pop_query)
 
                 for i in self.pop_data:
                         self.bars.append(i[0])
                         self.height.append(i[1])
+                
+                book_rev_query = """
+                SELECT MONTH(purchase_date) AS 'month',
+                SUM(booking_price) AS 'booking_price_sum',
+                CAST(AVG(ticket_amount) AS FLOAT) AS 'avg_tickets',
+                CAST(SUM(ticket_amount) AS INT) AS 'tickets_sold'
+                FROM bookings WHERE YEAR(purchase_date) = '2022'
+                GROUP BY MONTH(purchase_date);
+                """
+
+                book_rev_results = sqlib.read_query(con, book_rev_query)
+
+                for i in book_rev_results:
+                        self.x.append(i[0])
+                        self.y1.append(round(i[1]*i[2]/1000, 2))
+                        self.y2.append(i[3])
+                        self.book_rev_data.append([i[0], round(i[1]*i[2]/1000, 2), i[3]])
+
+                self.print_console = input("Would you like the info printed to the console? ").lower().strip()
+                self.save_graph = input("Would you like the info saved as a graph? ").lower().strip()
 
         # tells the user helpful info when the print the object
         def __str__(self):
                 return """
-                This class' primary purpose is to generate reports as charts and text. 
-                You can run pop_destinations to see a chart of the most popular destinations.
+                This class' primary purpose is to generate reports as charts and text.
+                You can run pop_destinations to see a chart of the most popular destinations 
+                or bookings_rev to see the monthly bookings and revenue.
                 """
+
+        def bookings_rev(self):
+                try:        
+                        if self.print_console == "yes":
+                                print(f'\n{self.book_rev_data}\n')
+                        elif self.print_console == "no":
+                                print ("The info won't be printed to the console.")
+                        else:
+                                print("Your print console input was not understood. The info won't be printed to the console.")
+                        
+                        if self.save_graph == "yes":
+                                # first plot with X and Y data
+                                plt.plot(self.x, self.y1, color = 'black')
+                        
+                                # second plot with x1 and y1 data
+                                plt.plot(self.x, self.y2, color = 'orange')
+                        
+                                plt.xlabel("Month")
+                                plt.ylabel("Revenue in Thousands (Black Line) and Bookings (Orange Line)")
+                                plt.suptitle('Monthly Booking Revenue')
+
+                                file_name = input("Enter file name: ")
+                                if '.' in file_name:
+                                        print("There was a period in your file name. Please run the program once more to try again.")
+                                else:
+                                        plt.savefig(f'{file_name}.png')
+                                        plt.show()
+                                        print(f"The graph has been saved as {file_name}.png")
+                        elif self.save_graph == "no":
+                                print("The graph will not be saved.")
+                        else:
+                                print("Your save graph input was not understood. The graph won't be saved.")
+                except Exception as err:
+                        print(f"You entered an invalid input. It produced the error:\n\n{err}\n\nYou may run the program to try again.")
 
         # makes a graph or prints the information of the most popular destinations
         def pop_destinations(self):
                 try:        
-                        print_console = input("Would you like the info printed to the console? ").lower().strip()
-
-                        if print_console == "yes":
+                        if self.print_console == "yes":
                                 print(f'\n{self.pop_data}\n')
-                        elif print_console == "no":
+                        elif self.print_console == "no":
                                 print ("The info won't be printed to the console.")
                         else:
-                                print("Your input was not understood. The info won't be printed to the console.")
-                        
-                        save_graph = input("Would you like the info saved as a graph? ").lower().strip()
-                        if  save_graph == "yes":
+                                print("Your print console input was not understood. The info won't be printed to the console.")                        
+                        if self.save_graph == "yes":
                                 plt.bar(self.bars, 
                                 self.height,
                                 color = "orange")
@@ -69,12 +124,11 @@ class Report_gen:
                                 else:
                                         plt.savefig(f'{file_name}.png')
                                         plt.show()
-                                        print(f"The graph has been saved as {file_name}")
-                        elif save_graph == "no":
+                                        print(f"The graph has been saved as {file_name}.png")
+                        elif self.save_graph == "no":
                                 print("The graph will not be saved.")
                         else:
                                 print("Your input was not understood. The graph won't be saved.")
-
                 except Exception as err:
                         print(f"You entered an invalid input. It produced the error:\n\n{err}\n\nYou may run the program to try again.")
 
@@ -151,4 +205,4 @@ class Gen_data:
                         self.__init__()
                 print(Gen_data())
 
-Report_gen().pop_destinations()
+Report_gen().bookings_rev()
