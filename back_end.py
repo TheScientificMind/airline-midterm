@@ -1,4 +1,5 @@
 import sqlib
+import math
 from_db = []
 con = sqlib.create_db_connection("127.0.0.1","alischer","alischer1","airline")
 
@@ -12,17 +13,14 @@ for x in query_results:
 flight_id = from_db[0][5]
 aircraft = from_db[0][-1]
 
-tt = """select * from bookings where flight_id ='{flight_id}';""".format(flight_id = flight_id)
+tt = """select id,seats_booked from flights where id='{id}';""".format(id = flight_id)
+
 ticket_checker = sqlib.read_query(con,tt)
-tickets = 0
-ticket_hold = []
-for x in ticket_checker:
-        x = list(x)
-        ticket_hold.append(x)
-for y in ticket_hold:
-        ticket =+ int(ticket_hold[y][8])
-# NEED HELP WITH ABOVE LINE OF CODE, ASK DYLAN AT LUNCH/BREAK?
-print(ticket)
+tt_db = []
+for y in ticket_checker:
+    y = list(y)
+    tt_db.append(y)
+tickets = tt_db[0][1]
 
 if aircraft == "737":
     seats = 25
@@ -48,14 +46,28 @@ else:
 email = "placeholder@test.edu"
 try:
     query = """select * from ffaccounts where email ='{email}';""".format(email = email)
-    # calculate the number of FF the user would get
-    # give user said FF
+    priceq = """select booking_price from bookings where email ='{email}';""".format(email = email)
+    price_checker = sqlib.read_query(con,priceq)
+    price = price_checker[0][0]
+    ff = round(price/10)
+    ffaccount = sqlib.read_query(con,query)
+    new_ff = ff + ffaccount[0][2]
+    add_ff = """update ffaccounts set ffmiles =('{new_ff}') where ffmiles =('{ffaccount}') and email =('{email}');""".format(new_ff = new_ff, ffaccount = ffaccount[0][2], email = email)
+    # execute thing ^
 except:
     if int(input("Would you like to create a frequent flier account? 1 for yes, 0 for no: ")) > 0:
         password = str(input("Please enter a password for your frequent flier account: "))
-        creater = """inset into ffaccounts (email,password,ffmiles) values ('{email}','{password}','0');""".format(email = email, password = password)
-        # calculate the number of FF the user would get
-        # give user said FF
+        creater = """insert into ffaccounts (email,password,ffmiles) values ('{email}','{password}','0');""".format(email = email, password = password)
+        # add an execute for ^
+        # INSERT DOESN'T WORK ^
+        priceq = """select booking_price from bookings where email ='{email}';""".format(email = email)
+        price_checker = sqlib.read_query(con,priceq)
+        price = price_checker[0][0]
+        ff = round(price/10)
+        new_ff = ff
+        add_ff = """update ffaccounts set ffmiles =('{new_ff}') where ffmiles =('0') and email =('{email}');""".format(new_ff = new_ff, ffaccount = 0, email = email)
+    else:
+        print("Understood")
 
 ## 22000 Total
 # 679 DEL origins
