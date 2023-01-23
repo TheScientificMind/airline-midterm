@@ -20,7 +20,8 @@ class Report_gen:
 
         def __init__(self):
                 sq = """
-                SELECT destination, count(destination)
+                SELECT destination, CAST(ROUND(COUNT(destination) * AVG(ticket_amount)) AS INT)
+                AS 'value_occurrence'
                 FROM flights INNER JOIN bookings
                 ON flights.id = bookings.flight_id
                 GROUP BY destination 
@@ -45,6 +46,7 @@ class Report_gen:
         def pop_destinations(self):
                 try:        
                         print_console = input("Would you like the info printed to the console? ").lower().strip()
+
                         if print_console == "yes":
                                 print(f'\n{self.pop_data}\n')
                         elif print_console == "no":
@@ -90,7 +92,7 @@ class Gen_data:
         aircraft_type = None
         password = None
         ffmiles = None
-        ntr = 2500
+        ntr = 10000
         
         # initializes fake values for tables
         def __init__(self):
@@ -124,7 +126,7 @@ class Gen_data:
 
                 return str(query_results)
                 
-        # inserts __ntr rows of data into the tables
+        # inserts ntr rows of data into the tables
         def insert_vals(self):
                 for i in range(self.ntr):
                         insert_bookings = f"""
@@ -140,10 +142,13 @@ class Gen_data:
                         VALUES ("{self.email}", "{self.password}", "{self.ffmiles}");
                         """
 
-                        run_insert = sqlib.execute_query(con, insert_bookings)
-                        run_insert = sqlib.execute_query(con, insert_ffaccounts)
+                        update_flights = f"UPDATE flights SET seats_booked = seats_booked + 1 WHERE id = {i + 1};"
+
+                        run_ins_bookings = sqlib.execute_query(con, insert_bookings)
+                        run_ins_ff = sqlib.execute_query(con, insert_ffaccounts)
+                        run_update = sqlib.execute_query(con, update_flights)
 
                         self.__init__()
-                print(Report_gen())
+                print(Gen_data())
 
 Report_gen().pop_destinations()
