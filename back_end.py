@@ -13,18 +13,9 @@ def ticket_checking(flight_id):
     aircraft = from_db[0][5]
     tickets = from_db[0][6]
 
-    if aircraft == "737":
-        seats = 25
-    elif aircraft == "747":
-        seats = 100
-    elif aircraft == "767":
-        seats = 50
-    elif aircraft == "777":
-        seats = 75
-    elif aircraft == "A320":
-        seats = 25
-    else:
-        print("error")
+    aircraft_search = f"""select * from capacity where aircraft ='{aircraft}';"""
+    search_results = sqlib.read_query(con,aircraft_search)
+    seats = (search_results[0][1])
 
     if tickets > seats:
         if input("I'm sorry but your requested flight is full. Press 1 if you would like to book another flight. Press 2 if you would like to end.") == "1":
