@@ -3,10 +3,8 @@ import math
 from_db = []
 con = sqlib.create_db_connection("127.0.0.1","alischer","alischer1","airline")
 
-uinput = int(input("Input FLight ID: "))
-
-def ticket_checking(uinput):
-    qt = """select * from flights where id='{uinput}';""".format(uinput = uinput)
+def ticket_checking(flight_id):
+    qt = """select * from flights where id='{flight_id}';""".format(flight_id = flight_id)
     query_results = sqlib.read_query(con,qt)
     for x in query_results:
         x = list(x)
