@@ -3,23 +3,15 @@ import math
 from_db = []
 con = sqlib.create_db_connection("127.0.0.1","alischer","alischer1","airline")
 
+# This function checks if there is space avalible for the tickets the user is trying to buy
 def ticket_checking(flight_id):
     qt = """select * from flights where id='{flight_id}';""".format(flight_id = flight_id)
     query_results = sqlib.read_query(con,qt)
     for x in query_results:
         x = list(x)
         from_db.append(x)
-    flight_id = from_db[0][0]
     aircraft = from_db[0][5]
-
-    tt = """select id,seats_booked from flights where id='{id}';""".format(id = flight_id)
-
-    ticket_checker = sqlib.read_query(con,tt)
-    tt_db = []
-    for y in ticket_checker:
-        y = list(y)
-        tt_db.append(y)
-    tickets = tt_db[0][1]
+    tickets = from_db[0][6]
 
     if aircraft == "737":
         seats = 25
@@ -42,6 +34,7 @@ def ticket_checking(flight_id):
     else:
         print("Your ticket has been booked.")
 
+# This function adds FF miles and creates new FF accounts
 def ffmiles(email):
     try:
         query = """select * from ffaccounts where email ='{email}';""".format(email = email)
@@ -69,51 +62,3 @@ def ffmiles(email):
             sqlib.execute_query(con,add_ff)
         else:
             print("Understood")
-
-## 22000 Total
-# 679 DEL origins
-# 691 DEL destinations
-# 646 SFO origins
-# 557 SFO destinations
-# 644 MEX origins
-# 628 MEX destinations
-# 647 LAX origins
-# 644 LAX destinations
-# 617 CTU origins
-# 671 CTU destinations
-# 647 EWR origins
-# 637 EWR destinations
-# 1300 SEA origins
-# 1327 SEA destinations
-# 656 IAH origins
-# 628 IAH destinations
-# 646 CAN origins
-# 638 CAN destinations
-# 698 FRA origins
-# 631 FRA destinations
-# 670 IST origins
-# 640 IST destinations
-# 618 CJU origins
-# 609 CJU destinations
-# 647 CKG origins
-# 603 CKG destinations
-# 693 DEN origins
-# 663 DEN destinations
-# BOS origins
-# BOS destinations
-# ORD origins
-# ORD destinations
-# ATL origins
-# ATL destinations
-# HND origins
-# HND destinations
-# KMG origins
-# KMG destinations
-# SVO origins
-# SVO destinations
-# JFK origins
-# JFK destinations
-# DXB origins
-# DXB destinations
-# SZX origins
-# SZX destinations
