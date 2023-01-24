@@ -53,13 +53,13 @@ try:
     ffaccount = sqlib.read_query(con,query)
     new_ff = ff + ffaccount[0][2]
     add_ff = """update ffaccounts set ffmiles =('{new_ff}') where ffmiles =('{ffaccount}') and email =('{email}');""".format(new_ff = new_ff, ffaccount = ffaccount[0][2], email = email)
-    # execute thing ^
+    sqlib.execute_query(con,add_ff)
 except:
     if int(input("Would you like to create a frequent flier account? 1 for yes, 0 for no: ")) > 0:
         password = str(input("Please enter a password for your frequent flier account: "))
-        creater = """insert into ffaccounts (email,password,ffmiles) values ('{email}','{password}','0');""".format(email = email, password = password)
-        # add an execute for ^
-        # INSERT DOESN'T WORK ^
+        # INSERT DOESN'T WORK ^ ask Dylan for assistance/explination
+        createrq = """insert into ffaccounts (email,password,ffmiles) values ('{email}','{password}','0');""".format(email = email, password = password)
+        sqlib.execute_query(con,createrq)
         priceq = """select booking_price from bookings where email ='{email}';""".format(email = email)
         price_checker = sqlib.read_query(con,priceq)
         price = price_checker[0][0]
