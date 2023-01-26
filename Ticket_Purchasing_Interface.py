@@ -14,7 +14,7 @@ class booking_entry:
          self.fname = fname
          self.lname = lname
          self.Phone_Number = Phone_Number
-         self.Email = Email
+         self.Email = Email 
 
 class Ticket:
    flightid = None
@@ -95,19 +95,19 @@ def Buy_Ticket (tickets_purchased): #overall function to buy tickets
 
          total = int(tickets_purchased) + tickets
          iquery = "UPDATE flights SET seats_booked='{x}' WHERE  ID='{ID}' ".format(x=total, ID=ID)
-         
+      
          #changes seats_booked column in db to the current amount of tickets after purchase
-         c = sqlib.execute_query(con,iquery) 
-        
+         c = sqlib.execute_query(con,iquery)
+         
    if bookingcheck == "yes": 
       Purchase(input("please enter origin airport:"), input("please enter destination airport:"))
    elif bookingcheck =="no":
       bookingentry = booking_entry(input("First name:"),input("Last name:"), input("Phone number:"),input("Email:"))
       Purchase(input("please enter origin airport:"), input("please enter destination airport:"))
-   Z= input("Will You Buy a Return Flight:")
-   if Z =="yes":
+   Returns= input("Will You Buy a Return Flight:")
+   if Returns =="yes":
       Purchase(input("please enter origin airport:"), input("please enter destination airport:"))
-   elif Z =='no':
+   elif Returns =='no':
       print ("one way ticket purchased")
    #repeats function if purchaser wants return flight, if not ends with a simple confrimation message
 
