@@ -3,28 +3,6 @@ import math
 from_db = []
 con = sqlib.create_db_connection("127.0.0.1","alischer","alischer1","airline")
 
-# This function checks if there is space avalible for the tickets the user is trying to buy
-def ticket_checking(flight_id):
-    qt = """select * from flights where id='{flight_id}';""".format(flight_id = flight_id)
-    query_results = sqlib.read_query(con,qt)
-    for x in query_results:
-        x = list(x)
-        from_db.append(x)
-    aircraft = from_db[0][5]
-    tickets = from_db[0][6]
-
-    aircraft_search = f"""select * from capacity where aircraft ='{aircraft}';"""
-    search_results = sqlib.read_query(con,aircraft_search)
-    seats = (search_results[0][1])
-
-    if tickets > seats:
-        if input("I'm sorry but your requested flight is full. Press 1 if you would like to book another flight. Press 2 if you would like to end.") == "1":
-            print("do booking stuff")
-        else:
-            print("Goodbye!")
-    else:
-        print("Your ticket for [INFORMATION] has been booked.")
-
 # This function adds FF miles and creates new FF accounts for users that don't have one (user's email needs to be in bookings for a FF account to be created)
 def ffmiles(email):
     try:

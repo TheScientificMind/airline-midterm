@@ -1,7 +1,6 @@
 import sqlib
 import random
 from datetime import time, date, datetime
-
 con = sqlib.create_db_connection ("127.0.0.1", "credmond", "credmond1", "airline")
 
 class booking_entry:
@@ -67,37 +66,63 @@ def Buy_Ticket (tickets_purchased): #overall function to buy tickets
             theflight.append(x)
 
          #finds flight from db that purchaser chose (by inputing the ID from the list)
+
+         # This function checks if there is space avalible for the tickets the user is trying to buy (annie created this code)
+   
          def Create_Ticket (j, x, y, c, a, f, g):
             S = input("how many return flights will this have:")
             ticket = Ticket(j, x, y, c, a , f, g)
             print(ticket.flightid,ticket.Departure_Airport,ticket.Arrival_Airport, ticket.Datetime, ticket.Price, ticket.Aircraft, ticket.Confirmation_Code)
-            #creates ticket function which will create a ticket object and print the ticket info out to the purchaser
-            cquery = """INSERT INTO bookings (fname, lname, email, phone, flight_id,booking_price, purchase_date, ticket_amount, return_flights, confirmation_code, aircraft_type) 
-            VALUES ('{fnam}','{lnam}','{theemail}','{phonen}','{idflight}','{pricen}','{thedated}','{amountn}','{returned}','{coded}','{typeofplane}') 
-            """.format(fnam=bookingentry.fname, lnam=bookingentry.lname,theemail=bookingentry.Email, phonen=bookingentry.Phone_Number,idflight=ticket.flightid,
-             pricen=ticket.Price,thedated=ticket.Datetime, amountn=tickets_purchased, returned=int(S), coded=ticket.Confirmation_Code, typeofplane=ticket.Aircraft )
-            #inputs data into bookings table, /return flights
-            g= sqlib.execute_query(con,cquery)
+   
+            def ticket_checking(flight_id):
+               from_db=[]
+               qt = """select * from flights where id='{flight_id}';""".format(flight_id = flight_id)
+               query_results = sqlib.read_query(con,qt)
+               for x in query_results:
+                  x = list(x)
+                  from_db.append(x)
+               aircraft = from_db[0][5]
+               tickets = (int(from_db[0][6]) + int(tickets_purchased))
 
-         R = str(random.randint(10000000, 99999999)) #creates random confirmation code
+               aircraft_search = """select * from capacity where aircraft ='{aircraft}';""".format(aircraft=aircraft)
+               search_results = sqlib.read_query(con,aircraft_search)
+               seats = (search_results[0][1])
 
-         #creates ticket using info about flight form db
-         Create_Ticket(str(theflight[0][0]),str(theflight [0][1]), str(theflight [0][2]), str(theflight [0][3]), str(theflight [0][4]), str(theflight [0][5]), R)
+               if tickets > seats:
+                  if  input("I'm sorry but your requested flight is full. Press 1 if you would like to book another flight. Press 2 if you would like to end.") == "1":
+                     Purchase(input("please enter origin airport:"), input("please enter destination airport:"))
+                     
+                  else:
+                     print("Goodbye!")
+               else:
+                  #creates ticket function which will create a ticket object and print the ticket info out to the purchaser
+                  cquery = """INSERT INTO bookings (fname, lname, email, phone, flight_id,booking_price, purchase_date, ticket_amount, return_flights, confirmation_code, aircraft_type) 
+                  VALUES ('{fnam}','{lnam}','{theemail}','{phonen}','{idflight}','{pricen}','{thedated}','{amountn}','{returned}','{coded}','{typeofplane}') 
+                  """.format(fnam=bookingentry.fname, lnam=bookingentry.lname,theemail=bookingentry.Email, phonen=bookingentry.Phone_Number,idflight=ticket.flightid,
+                  pricen=ticket.Price,thedated=ticket.Datetime, amountn=tickets_purchased, returned=int(S), coded=ticket.Confirmation_Code, typeofplane=ticket.Aircraft )
+                  #inputs data into bookings table, /return flights
+                  g= sqlib.execute_query(con,cquery)
+
+                  R = str(random.randint(10000000, 99999999)) #creates random confirmation code
+
+                  #creates ticket using info about flight form db
+                  Create_Ticket(str(theflight[0][0]),str(theflight [0][1]), str(theflight [0][2]), str(theflight [0][3]), str(theflight [0][4]), str(theflight [0][5]), R)
          
-         tt = """select ID,seats_booked from flights where ID='{id}';""".format(id=ID)
-         ticket_checker = sqlib.read_query(con,tt)
-         tt_db = []
+                  tt = """select ID,seats_booked from flights where ID='{id}';""".format(id=ID)
+                  ticket_checker = sqlib.read_query(con,tt)
+                  tt_db = []
 
-         for y in ticket_checker:
-            y = list(y)
-            tt_db.append(y)
-            tickets = tt_db[0][1]
+                  for y in ticket_checker:
+                     y = list(y)
+                  tt_db.append(y)
+                  tickets = tt_db[0][1]
 
-         total = int(tickets_purchased) + tickets
-         iquery = "UPDATE flights SET seats_booked='{x}' WHERE  ID='{ID}' ".format(x=total, ID=ID)
+                  total = int(tickets_purchased) + tickets
+                  iquery = "UPDATE flights SET seats_booked='{x}' WHERE  ID='{ID}' ".format(x=total, ID=ID)
       
-         #changes seats_booked column in db to the current amount of tickets after purchase
-         c = sqlib.execute_query(con,iquery)
+                  #changes seats_booked column in db to the current amount of tickets after purchase
+                  c = sqlib.execute_query(con,iquery)
+            ticket_checking(ticket.flightid)
          
    if bookingcheck == "yes": 
       Purchase(input("please enter origin airport:"), input("please enter destination airport:"))
