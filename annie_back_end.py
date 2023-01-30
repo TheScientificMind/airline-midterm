@@ -30,9 +30,9 @@ def ffmiles(email):
     try:
         # If user already has an FF account
         query = """select * from ffaccounts where email ='{email}';""".format(email = email)
-        priceq = """select booking_price from bookings where email ='{email}';""".format(email = email)
+        priceq = """select bookings.flight_id,bookings.email,flights.price from bookings join flights on bookings.flight_id = flights.id where email ='{email}';""".format(email = email)
         price_checker = sqlib.read_query(con,priceq)
-        price = price_checker[0][0]
+        price = price_checker[0][2]
         ff = round(price/10)
         ffaccount = sqlib.read_query(con,query)
         new_ff = ff + ffaccount[0][2]
@@ -45,9 +45,9 @@ def ffmiles(email):
             password = str(input("Please enter a password for your frequent flier account: "))
             createrq = """insert into ffaccounts (email,password,ffmiles) values ('{email}','{password}','0');""".format(email = email, password = password)
             sqlib.execute_query(con,createrq)
-            priceq = """select booking_price from bookings where email ='{email}';""".format(email = email)
+            priceq = """select bookings.flight_id,bookings.email,flights.price from bookings join flights on bookings.flight_id = flights.id where email ='{email}';""".format(email = email)
             price_checker = sqlib.read_query(con,priceq)
-            price = price_checker[0][0]
+            price = price_checker[0][2]
             ff = round(price/10)
             new_ff = ff
             add_ff = """update ffaccounts set ffmiles =('{new_ff}') where ffmiles =('0') and email =('{email}');""".format(new_ff = new_ff, ffaccount = 0, email = email)
