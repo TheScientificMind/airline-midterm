@@ -1,6 +1,7 @@
 import sqlib
 import random
 from datetime import time, date, datetime
+from back_end import ffmiles
 con = sqlib.create_db_connection ("127.0.0.1", "credmond", "credmond1", "airline")
 
 class booking_entry:
@@ -34,14 +35,26 @@ class Ticket:
       self.Confirmation_Code = Confirmation_Code
 
 def Buy_Ticket (tickets_purchased, returns): #overall function to buy tickets
-   bookingentry = booking_entry(input("First name:"),input("Last name:"), input("Phone number:"),input("Email:"))
+  for x in range (int(returns)+1):
+      already = input("do you already have a bookingentry account:")
+      if already == "yes":
+         bookingen = []
+         bookingemail = input("input your bookings email:")
+         vquery = "Select fname, lname, email, phone From Bookings Where ID={email}".format(email=bookingemail)
+         d = sqlib.read_query(con, vquery)
+         for x in d:
+            x = list(x)
+            bookingen.append(x)
+            bookingentry =booking_entry(bookingen[0][1], bookingen[0][2], bookingen[0][3], bookingen [0][4], bookingen [0][5])
+      
+      if already == "no":
+         bookingentry = booking_entry(input("First name:"),input("Last name:"), input("Phone number:"),input("Email:"))
 
-   print (bookingentry.fname, bookingentry.lname, bookingentry.Phone_Number, bookingentry.Email)
+      print (bookingentry.fname, bookingentry.lname, bookingentry.Phone_Number, bookingentry.Email)
 
-   bookingcheck = input("Is this the correct booking entry:")
+      bookingcheck = input("Is this the correct booking entry account:")
 
    #creates booking entry object and asks if this information entered is correct
-   for x in range (int(returns)+1):
       def Purchase(Airport1, Airport2): #function all code is in to make things easier
           theflight = []
           sflights =[]
@@ -122,6 +135,7 @@ def Buy_Ticket (tickets_purchased, returns): #overall function to buy tickets
                      #changes seats_booked column in db to the current amount of tickets after purchase
                      c = sqlib.execute_query(con,iquery)
           ticket_checking(ID)
+          ffmiles(bookingentry.Email)
          
       if bookingcheck == "yes": 
          Purchase(input("please enter origin airport:"), input("please enter destination airport:"))
@@ -131,5 +145,4 @@ def Buy_Ticket (tickets_purchased, returns): #overall function to buy tickets
       else:
          print ("please enter yes or no, rerun command")
      
-
 Buy_Ticket(input("How many tickets do you want to buy:"), input("how many return flights will this have:"))
