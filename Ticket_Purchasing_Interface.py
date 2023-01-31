@@ -1,7 +1,7 @@
 import sqlib
 import random
 from datetime import time, date, datetime
-from back_end import ffmiles
+from annie_back_end import ffmiles
 con = sqlib.create_db_connection ("127.0.0.1", "credmond", "credmond1", "airline")
 
 class booking_entry:
@@ -109,9 +109,9 @@ def Buy_Ticket (tickets_purchased, returns): #overall function to buy tickets
                         ticket = Ticket(j, x, y, c, a , f, g)
                         print(ticket.flightid,ticket.Departure_Airport,ticket.Arrival_Airport, ticket.Datetime, ticket.Price, ticket.Aircraft, ticket.Confirmation_Code)
                         cquery = """INSERT INTO bookings (fname, lname, email, phone, flight_id,booking_price, purchase_date, ticket_amount, return_flights, confirmation_code, aircraft_type) 
-                        VALUES ('{fnam}','{lnam}','{theemail}','{phonen}','{idflight}','{pricen}','{thedated}','{amountn}','{returned}','{coded}','{typeofplane}') 
+                        VALUES ('{fnam}','{lnam}','{theemail}','{phonen}','{idflight}','{thedated}','{amountn}','{returned}','{coded}','{typeofplane}') 
                         """.format(fnam=bookingentry.fname, lnam=bookingentry.lname,theemail=bookingentry.Email, phonen=bookingentry.Phone_Number,idflight=ticket.flightid,
-                        pricen=ticket.Price,thedated=ticket.Datetime, amountn=tickets_purchased, returned=int(returns), coded=ticket.Confirmation_Code, typeofplane=ticket.Aircraft )
+                       thedated=ticket.Datetime, amountn=tickets_purchased, returned=int(returns), coded=ticket.Confirmation_Code, typeofplane=ticket.Aircraft )
                         #inputs data into bookings table, /return flights
                         g= sqlib.execute_query(con,cquery)
 
