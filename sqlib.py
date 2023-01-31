@@ -16,7 +16,7 @@ def create_db_connection(host_name, user_name, user_password, db_name):
     return connection
 
 def execute_query(connection, query):
-    cursor = connection.cursor()
+    cursor = connection.cursor(buffered=True)
     try:
         cursor.execute(query)
         connection.commit()
@@ -24,7 +24,7 @@ def execute_query(connection, query):
         print(f"Error: '{err}'")
 
 def read_query(connection, query):
-    cursor = connection.cursor()
+    cursor = connection.cursor(buffered=True)
     result = None
     try:
         cursor.execute(query)

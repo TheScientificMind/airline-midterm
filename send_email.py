@@ -37,7 +37,7 @@ def sendEmail(customer_email, code, origin, destination, date, time, aircraft, c
 
     # tries to send email
     try:
-        sendgrid_client = sendgrid.SendGridAPIClient(api_key=os.environ.get('SENDGRID_API_KEY'))
+        sendgrid_client = sendgrid.SendGridAPIClient('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')
         sendgrid_client.send(message)
     except Exception as e:
         print(e.body)

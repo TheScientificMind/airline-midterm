@@ -33,20 +33,21 @@ class Report_gen:
                 
                 book_rev_query = """
                 SELECT MONTH(purchase_date) AS 'month',
-                SUM(booking_price) AS 'booking_price_sum',
-                CAST(AVG(ticket_amount) AS FLOAT) AS 'avg_tickets',
-                CAST(SUM(ticket_amount) AS INT) AS 'tickets_sold'
-                FROM bookings WHERE YEAR(purchase_date) = '2022'
+                (SUM(ticket_amount) + SUM(return_flights)) * price AS 'monthly_sales',
+                CAST(SUM(ticket_amount) + SUM(return_flights) AS INT) AS 'tickets_sold'
+                FROM bookings INNER JOIN flights
+                ON bookings.flight_id = flights.id
+                WHERE YEAR(purchase_date) = '2022'
                 GROUP BY MONTH(purchase_date);
                 """
 
-                book_rev_results = sqlib.read_query(con, book_rev_query)
+                self.book_rev_data = sqlib.read_query(con, book_rev_query)
 
-                for i in book_rev_results:
-                        self.x.append(i[0])
-                        self.y1.append(round(i[1]*i[2]/1000, 2))
-                        self.y2.append(i[3])
-                        self.book_rev_data.append([i[0], round(i[1]*i[2]/1000, 2), i[3]])
+                for i in self.book_rev_data:
+                        if len(self.x) < 12:
+                                self.x.append(i[0])
+                                self.y1.append(round(i[1]/1000))
+                                self.y2.append(i[2])
 
                 self.print_console = input("Would you like the info printed to the console? ").lower().strip()
                 self.save_graph = input("Would you like the info saved as a graph? ").lower().strip()
@@ -62,13 +63,15 @@ class Report_gen:
         def bookings_rev(self):
                 try:        
                         if self.print_console == "yes":
-                                print(f'\n{self.book_rev_data}\n')
+                                print("\nColumn 1 = Month\nColumn 2 = Sales\nColumn 3 = Tickets Sold")
+                                print(f'{self.book_rev_data}\n')
                         elif self.print_console == "no":
                                 print ("The info won't be printed to the console.")
                         else:
                                 print("Your print console input was not understood. The info won't be printed to the console.")
                         
                         if self.save_graph == "yes":
+                                plt.close()
                                 # first plot with X and Y data
                                 plt.plot(self.x, self.y1, color = 'black')
                         
@@ -80,7 +83,7 @@ class Report_gen:
                                 plt.suptitle('Monthly Booking Revenue')
 
                                 file_name = input("Enter file name: ")
-                                if '.' in file_name:
+                                if '.' or ' ' in file_name:
                                         print("There was a period in your file name. Please run the program once more to try again.")
                                 else:
                                         plt.savefig(f'{file_name}.png')
@@ -97,12 +100,14 @@ class Report_gen:
         def pop_destinations(self):
                 try:        
                         if self.print_console == "yes":
-                                print(f'\n{self.pop_data}\n')
+                                print("\nColumn 1 = Destination\nColumn 2 = Visitors")
+                                print(f'{self.pop_data}\n')
                         elif self.print_console == "no":
                                 print ("The info won't be printed to the console.")
                         else:
                                 print("Your print console input was not understood. The info won't be printed to the console.")                        
                         if self.save_graph == "yes":
+                                plt.close()
                                 plt.bar(self.bars, 
                                 self.height,
                                 color = "orange")
@@ -111,8 +116,8 @@ class Report_gen:
                                 plt.ylabel('# of Bookings')
                                 plt.suptitle('Most Popular Destinations')
                                 file_name = input("Enter file name: ")
-                                if '.' in file_name:
-                                        print("There was a period in your file name. Please run the program once more to try again.")
+                                if '.' or ' ' in file_name:
+                                        print("There was a period or space in your file name. Please run the program once more to try again.")
                                 else:
                                         plt.savefig(f'{file_name}.png')
                                         plt.show()
@@ -125,7 +130,7 @@ class Report_gen:
                         print(f"You entered an invalid input. It produced the error:\n\n{err}\n\nYou may run the program to try again.")
 
 def run_report_gen():
-        run_pop = input("Would you like to run the popular destinations code?").strip().lower()
+        run_pop = input("Would you like to run the popular destinations code? ").strip().lower()
         if run_pop == "yes":
                 Report_gen().pop_destinations()
         elif run_pop == "no":      
@@ -133,7 +138,7 @@ def run_report_gen():
         else:
                 print("You entered an input other than yes or no. Pop_destinations won't be run.")
 
-        run_rev = input("Would you like to run the bookings and revenue code?").strip().lower()
+        run_rev = input("Would you like to run the bookings and revenue code? ").strip().lower()
 
         if run_rev == "yes":
                 Report_gen().bookings_rev()
