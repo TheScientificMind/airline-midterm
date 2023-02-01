@@ -3,6 +3,7 @@ import sqlib
 
 con = sqlib.create_db_connection("127.0.0.1", "dheadley", "dheadley1", "airline")
 
+# generates reports on the status of the airline
 class Report_gen:
         bars = []
         height = []
@@ -14,7 +15,9 @@ class Report_gen:
         print_console = None
         save_graph = None
 
+        # initializes the values for report generation
         def __init__(self):
+                # query to get the most pop dests by month
                 pop_query = """
                 SELECT destination, SUM(ticket_amount)
                 AS 'value_occurrence'
@@ -26,11 +29,13 @@ class Report_gen:
                 """
 
                 self.pop_data = sqlib.read_query(con, pop_query)
-
+                
+                # fills the pop dest axis values with their data
                 for i in self.pop_data:
                         self.bars.append(i[0])
                         self.height.append(i[1])
                 
+                #query to get the booking and revenue information of the airline
                 book_rev_query = """
                 SELECT MONTH(purchase_date) AS 'month',
                 (SUM(ticket_amount) + SUM(return_flights)) * price AS 'monthly_sales',
@@ -43,6 +48,7 @@ class Report_gen:
 
                 self.book_rev_data = sqlib.read_query(con, book_rev_query)
 
+                # fills the book_rev axis values with their data
                 for i in self.book_rev_data:
                         if len(self.x) < 12:
                                 self.x.append(i[0])
@@ -60,6 +66,7 @@ class Report_gen:
                 or bookings_rev to see the monthly bookings and revenue.
                 """
 
+        # gets the booking and revenue data of the airline in text or graph form
         def bookings_rev(self):
                 try:        
                         if self.print_console == "yes":
@@ -129,6 +136,7 @@ class Report_gen:
                 except Exception as err:
                         print(f"You entered an invalid input. It produced the error:\n\n{err}\n\nYou may run the program to try again.")
 
+# manages which reports are ran
 def run_report_gen():
         run_pop = input("Would you like to run the popular destinations code? ").strip().lower()
         if run_pop == "yes":
