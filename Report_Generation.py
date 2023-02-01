@@ -90,7 +90,7 @@ class Report_gen:
                                 plt.suptitle('Monthly Booking Revenue')
 
                                 file_name = input("Enter file name: ")
-                                if '.' or ' ' in file_name:
+                                if '.' in file_name or ' ' in file_name:
                                         print("There was a period in your file name. Please run the program once more to try again.")
                                 else:
                                         plt.savefig(f'{file_name}.png')
@@ -123,7 +123,7 @@ class Report_gen:
                                 plt.ylabel('# of Bookings')
                                 plt.suptitle('Most Popular Destinations')
                                 file_name = input("Enter file name: ")
-                                if '.' or ' ' in file_name:
+                                if '.' in file_name or ' ' in file_name:
                                         print("There was a period or space in your file name. Please run the program once more to try again.")
                                 else:
                                         plt.savefig(f'{file_name}.png')
